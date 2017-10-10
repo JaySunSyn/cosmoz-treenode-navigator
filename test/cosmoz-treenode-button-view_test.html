@@ -1,7 +1,7 @@
 <!doctype html>
 
 <html>
-<head>
+	<head>
 	<title>cosmoz-treenode-navigator test</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
@@ -15,18 +15,17 @@
 	<link rel="import" href="../../test-fixture/test-fixture.html">
 	<link rel="import" href="../../iron-test-helpers/iron-test-helpers.html">
 
-	<link rel="import" href="../cosmoz-treenode-navigator.html">
+	<link rel="import" href="../cosmoz-treenode-button-view.html">
 	<link rel="import" href="../../cosmoz-tree/cosmoz-default-tree.html">
 	<link rel="import" href="../../iron-ajax/iron-ajax.html">
 </head>
 <body>
-	<test-fixture id="basic">
+	<test-fixture id="rtl">
 		<template>
-			<cosmoz-treenode-navigator id="navigator"></cosmoz-treenode-navigator>
+			<cosmoz-treenode-button-view></cosmoz-treenode-button-view>
 			<iron-ajax auto
-				url="data/basicTree.json"
-				handle-as="json"
-				last-response="{{ basicTree }}">
+				url="data/rtlTest.json"
+				handle-as="json">
 			</iron-ajax>
 		</template>
 	</test-fixture>
@@ -35,30 +34,32 @@
 	(function () {
 		'use strict';
 
-		suite('cosmoz-treenode-navigator', function () {
-			var basicFixture,
-				basicTree,
-				navigator;
+		suite('rtl', function () {
+			var buttonFixture,
+				tree,
+				treeButton;
 
 			suiteSetup(function (done) {
 				var ajax;
-				basicFixture = fixture('basic');
-				ajax = basicFixture.find(function (n) {
+				buttonFixture = fixture('rtl');
+				ajax = buttonFixture.find(function (n) {
 					return n.is === 'iron-ajax';
 				});
-				navigator = basicFixture.find(function (n) {
-					return n.is === 'cosmoz-treenode-navigator';
+				treeButton = buttonFixture.find(function (n) {
+					return n.is === 'cosmoz-treenode-button-view';
 				});
 
 				ajax.addEventListener('response', function () {
-					basicTree = new Cosmoz.DefaultTree(ajax.lastResponse);
-					navigator.tree = basicTree;
+					tree = new Cosmoz.DefaultTree(ajax.lastResponse);
+					treeButton.tree = tree;
 					done();
 				});
 			});
 
-			test('instantiating the element', function () {
-				assert.equal(navigator.is, 'cosmoz-treenode-navigator');
+			test('button renders selected path', function () {
+				treeButton.nodePath = '1.2.3';
+				var buttonLabel = treeButton.$$('.pathToNode').textContent;
+				assert.equal(buttonLabel, '1 / 2 / 3');
 			});
 
 		});
